@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DropInFinOps — Playground Answer Key</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg-deep:#1E2334; --coral:#E07A5F; --coral-soft:rgba(224,122,95,.10);
+    --teal:#3D5A80; --teal-soft:rgba(61,90,128,.10); --cream:#FAF6F1;
+    --text:#2D3142; --text-2:#5A5A5A; --text-3:#8A8A8A; --border:#E8DFD0;
+    --green:#27ae60; --card:#fff;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  }
+  body{font-family:var(--font);background:var(--cream);color:var(--text);line-height:1.5;padding:0 0 64px}
+  .topbar{background:var(--bg-deep);height:52px;display:flex;align-items:center;padding:0 28px}
+  .logo{font-weight:700;font-size:15px;letter-spacing:-.03em;color:#fff}
+  .logo .d{color:var(--coral)} .logo .f{color:var(--text-3)}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+  header.hero{padding:40px 0 8px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--coral)}
+  h1{font-size:30px;letter-spacing:-.02em;margin:6px 0 12px}
+  .lede{font-size:16px;color:var(--text-2);max-width:64ch}
+  .meta{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 0;font-size:13px;color:var(--text-3)}
+  .meta b{color:var(--text);font-weight:600}
+  h2{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin:38px 0 14px;border-bottom:1px solid var(--border);padding-bottom:8px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:0 1px 3px rgba(30,35,52,.04)}
+  .card.feature{border-left:4px solid var(--coral)}
+  .card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .card-head .id{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--teal)}
+  .card-head h3{font-size:18px;letter-spacing:-.01em}
+  .badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px}
+  .badge.cloud{background:var(--teal-soft);color:var(--teal)}
+  .badge.sev{background:var(--coral-soft);color:var(--coral)}
+  .card p{color:var(--text-2);font-size:15px;margin:8px 0}
+  table{width:100%;border-collapse:collapse;margin:14px 0 4px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+  th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+  td.num{font-family:var(--mono);color:var(--text)}
+  td .ok{color:var(--green);font-weight:600}
+  code,pre{font-family:var(--mono)}
+  pre{background:var(--bg-deep);color:#E6E9F0;border-radius:10px;padding:12px 14px;font-size:13px;overflow-x:auto;margin:12px 0}
+  pre .c{color:#8A93A8}
+  .inline-code{background:var(--grey,#eee);background:rgba(30,35,52,.06);border-radius:5px;padding:1px 6px;font-size:.88em}
+  .patterns td:first-child{font-weight:600;color:var(--text)}
+  .patterns .q{font-family:var(--mono);font-size:12.5px}
+  .patterns .soon{color:var(--text-3);font-style:italic}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:14px;color:var(--text-2)}
+  footer a{color:var(--coral);text-decoration:none;font-weight:600}
+  .note{font-size:13px;color:var(--text-3);margin-top:10px}
+</style>
+</head>
+<body>
+  <div class="topbar"><span class="logo"><span class="d">Drop</span>In<span class="f">FinOps</span></span></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Playground · Answer Key</div>
+      <h1>What's hiding in the sample bill</h1>
+      <p class="lede">This is synthetic multi-cloud FOCUS billing data for a fictional company (<b>ACME</b>),
+      with deliberate cost leaks planted in it. Run a detector query yourself and check the result against
+      the expected finding below.</p>
+      <div class="meta">
+        <span><b>365</b> days · AWS · Azure · GCP</span>
+        <span><b>20</b> planted anomalies</span>
+        <span>Dated through <b>today</b> on load</span>
+      </div>
+    </header>
+
+    <h2>How to use this guide</h2>
+    <div class="card">
+      <p style="margin-top:0">From the repo root, start the playground and run the first detector:</p>
+      <pre><span class="c"># land at the DuckDB prompt with the data loaded as `bill`</span>
+./run.sh
+
+<span class="c"># see the mechanics — top subaccounts ranked, the 3 rules as pass/fail flags:</span>
+.read queries/qb22-config-change-data-processing-runaway/diagnostic.duckdb.sql
+
+<span class="c"># then the detector — keeps only the confirmed hit:</span>
+.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql</pre>
+      <p style="margin-bottom:0">In the diagnostic, the real runaway trips all three flags while normal
+      accounts sit near a 1.0&times; step — that separation is the proof. Compare the detector's row to the
+      expected finding below, then explore: change a threshold, group by
+      <code class="inline-code">servicename</code>, look at the days around the onset.</p>
+    </div>
+
+    <h2>The worked example — QB22</h2>
+    <div class="card feature">
+      <div class="card-head">
+        <span class="id">QB22</span>
+        <h3>Config-Change Data-Processing Runaway</h3>
+        <span class="badge cloud">AWS</span>
+        <span class="badge sev">High</span>
+      </div>
+      <p>On one AWS subaccount, per-GB <b>data-processing spend</b> (NAT-gateway bytes, cross-AZ transfer,
+      traffic inspection) steps up sharply and stays elevated — while <b>compute stays flat</b>. That
+      combination is the fingerprint of a networking/routing config change shipped without a cost guardrail,
+      not organic growth. No single day looks alarming, which is why this kind of leak runs for weeks.</p>
+
+      <table>
+        <tr><th>What the detector should show</th><th>Expected</th></tr>
+        <tr><td>Subaccount</td><td class="num">112233445566-us-west-2</td></tr>
+        <tr><td>Data-processing step vs baseline</td><td class="num">~5.4×</td></tr>
+        <tr><td>Compute growth (the discriminant)</td><td class="num">~1.0× <span class="ok">(flat)</span></td></tr>
+        <tr><td>Data-processing spend, last 7 days</td><td class="num">~$383</td></tr>
+        <tr><td>Elevated days in the recent window</td><td class="num">≥ 5 of 7</td></tr>
+        <tr><td>Onset</td><td class="num">~1 month ago</td></tr>
+      </table>
+      <p class="note">Your exact figures shift slightly because the data is re-dated to today on every load —
+      the shape (sharp step, flat compute, sustained) is what matters.</p>
+    </div>
+
+    <h2>Also planted in this dataset</h2>
+    <div class="card">
+      <p style="margin-top:0">The same bill contains other planted leaks across all three clouds. Where a
+      detector query is published, it's linked; the rest ship as this library grows.</p>
+      <table class="patterns">
+        <tr><th>Leak shape</th><th>Cloud(s)</th><th>Query</th></tr>
+        <tr><td>Sustained cost acceleration / usage spike</td><td>AWS · Azure · GCP</td><td class="q">QB02 · QB03</td></tr>
+        <tr><td>Data egress spike</td><td>GCP</td><td class="q">QB02</td></tr>
+        <tr><td>Commitment (RI/SP) utilization waste</td><td>Azure</td><td class="q">QB10</td></tr>
+        <tr><td>Compute in a region with no prior history</td><td>Azure · GCP</td><td class="q">QB09</td></tr>
+        <tr><td>Unexpected AI spend, no prior history</td><td>AWS · Azure</td><td class="q">QB21</td></tr>
+        <tr><td>Idle developer resource billing 24/7</td><td>GCP</td><td class="q">QB12</td></tr>
+        <tr><td>Idle model endpoint still billing</td><td>AWS</td><td class="q">QB16</td></tr>
+        <tr><td>Orphaned search/index capacity, no matching activity</td><td>AWS</td><td class="q">QB18</td></tr>
+        <tr><td>Premium model tier on a routine workload</td><td>AWS</td><td class="soon">coming</td></tr>
+        <tr><td>Config-change data-processing runaway</td><td>AWS</td><td class="q">QB22 ↑</td></tr>
+      </table>
+    </div>
+
+    <footer>
+      These queries teach you the <b>shape</b> of each leak so you can catch it yourself, free.
+      <a href="https://dropinfinops.com">DropInFinOps</a> scores, ranks, and explains these signals across
+      your clouds automatically — but the patterns are yours to keep.
+    </footer>
+  </div>
+</body>
+</html>
