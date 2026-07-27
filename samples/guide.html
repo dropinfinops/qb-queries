@@ -115,15 +115,17 @@
     <h2>Also planted in this dataset</h2>
     <div class="card">
       <p style="margin-top:0">The same bill contains other planted leaks across all three clouds. Where a
-      detector query is published, it's linked; the rest ship as this library grows.</p>
+      detector query is published, it's linked; the rest ship as this library grows. Rows marked
+      <span class="soon">shape not yet in sample</span> have a published query but no matching leak planted
+      yet — run them and you will correctly get zero rows.</p>
       <table class="patterns">
         <tr><th>Leak shape</th><th>Cloud(s)</th><th>Query</th></tr>
         <tr><td>Sustained cost acceleration / usage spike</td><td>AWS · Azure · GCP</td><td class="q">QB02 · QB03</td></tr>
         <tr><td>Data egress spike</td><td>GCP</td><td class="q">QB02</td></tr>
-        <tr><td>Commitment (RI/SP) utilization waste</td><td>Azure</td><td class="q">QB10</td></tr>
+        <tr><td>Commitment (RI/SP) utilization waste</td><td>Azure</td><td class="soon">QB10 · shape not yet in sample</td></tr>
         <tr><td>Compute in a region with no prior history</td><td>Azure · GCP</td><td class="q">QB09</td></tr>
         <tr><td>Unexpected AI spend, no prior history</td><td>AWS · Azure</td><td class="q">QB21</td></tr>
-        <tr><td>Idle developer resource billing 24/7</td><td>GCP</td><td class="q">QB12</td></tr>
+        <tr><td>Idle developer resource billing 24/7</td><td>GCP</td><td class="soon">QB12 · shape not yet in sample</td></tr>
         <tr><td>Idle model endpoint still billing</td><td>AWS</td><td class="q">QB16</td></tr>
         <tr><td>Orphaned search/index capacity, no matching activity</td><td>AWS</td><td class="q">QB18</td></tr>
         <tr><td>Premium model tier on a routine workload</td><td>AWS</td><td class="soon">coming</td></tr>
