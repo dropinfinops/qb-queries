@@ -4,6 +4,23 @@
 generating significantly more `Unused` spend relative to `Used` spend in the last 7 days
 compared to its prior 30-day baseline. The waste ratio is deteriorating.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb10-commitment-loss/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb10-commitment-loss/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb10-commitment-loss/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **1 row**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 Commitment loss is an inverse anomaly — the commitment fee stays fixed while the usage it

@@ -4,6 +4,29 @@
 barely reduces spend when the business is closed. Resources with weekday-only workloads
 should show a clear weekend dip; the absence of that dip is the signal.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb07-scheduling-miss/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb07-scheduling-miss/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb07-scheduling-miss/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **110 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+> **This is a posture measure, not an alarm.** It describes a property of the whole estate
+> rather than finding one thing that is wrong, so it returns many rows by design — 110 against
+> the sample bill. It cannot know which of *your* resources were meant to be shut down or
+> tagged. Read it as a list to triage. The query caps output at 25 rows; remove the `LIMIT`
+> to see the full population.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 Non-production environments, batch pipelines, and developer tooling that should follow a
