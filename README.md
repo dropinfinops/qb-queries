@@ -46,16 +46,49 @@ organic growth. Open **`samples/guide.html`** in a browser for the full answer k
 what each detector should surface), then explore: adjust a threshold, group by service, inspect the
 days around `onset_day`.
 
-**See the mechanics.** The detector keeps only confirmed hits — one row here. To watch that row
-*separate from the field*, run the ranked diagnostic, which lists the top subaccounts with the
-three rules exposed as pass/fail flags:
+### Every pattern ships in three acts
+
+A detector that prints one row asks you to take its word for it. These don't. Each pattern has
+three files that build on each other, and you can run all three in about a minute:
+
+| Act | File | Question it answers |
+|---|---|---|
+| **CHECK** | `preflight.duckdb.sql` | Can this data even answer the question? |
+| **LEARN** | `diagnostic.duckdb.sql` | What does the whole field look like, and where is the line? |
+| **TRUST** | `query.duckdb.sql` | What actually fires? |
 
 ```sql
+.read queries/qb22-config-change-data-processing-runaway/preflight.duckdb.sql
 .read queries/qb22-config-change-data-processing-runaway/diagnostic.duckdb.sql
+.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql
 ```
 
-The real runaway trips all three (`fires = true`); every normal account sits near a 1.0× step and
-fails. That separation — not a lone row — is the proof.
+**Why preflight matters more than it looks.** It makes a zero-row result mean something:
+
+- **0 rows, every check PASS** → a real, honest zero. Your bill is clean on this pattern.
+- **0 rows, any check FAIL** → your data can't answer the question. That's a blind spot, not a
+  clean bill.
+
+Those are opposite conclusions and they look identical without it. Most published FinOps SQL
+can't tell you which one you're looking at.
+
+**Why diagnostic matters.** The detector keeps only confirmed hits — one row here. The diagnostic
+ranks the field and exposes each rule as a pass/fail flag, so you see the real runaway trip all
+three (`fires = true`) while every normal account sits near a 1.0× step and fails. That
+separation — not a lone row — is the proof. It also shows you exactly *why* a pattern found
+nothing, which is the more common case on a healthy bill.
+
+### Two kinds of query in here
+
+Not every pattern is an alarm, and it's worth knowing which is which before you run them:
+
+- **14 are anomaly detectors** — they find a specific thing that is wrong. Expect a small number
+  of rows that stand clearly apart from the field.
+- **QB07 and QB08 are posture measures** — they describe a property of your whole estate.
+  QB08 measures tagging coverage; QB07 lists everything billed flat across weekends. On this
+  sample QB07 matches 110 resources and QB08 matches 176, and that is the correct answer: most
+  cloud infrastructure genuinely is always-on, and neither query can know which of *your*
+  resources were supposed to be shut down. Read them as a list to triage, not a finding to act on.
 
 **Run it on your own bill.** Replace `bill` with your own FOCUS table. Note the shape: this sample
 is in DropInFinOps' normalized FOCUS form — complex fields (`tags`, discounts) are JSON strings,
@@ -104,7 +137,15 @@ providers.
   `CURRENT_DATE - INTERVAL N DAY`. BigQuery: `DATE_SUB(CURRENT_DATE, INTERVAL N DAY)`.
 - `DAY_OF_WEEK(date)` — Trino/Presto returns 1=Monday … 7=Sunday (ISO 8601). DuckDB `dayofweek()`
   returns 0=Sunday … 6=Saturday; BigQuery/MySQL return 1=Sunday … 7=Saturday. Adjust weekend
-  tests accordingly.
+  tests accordingly. **The DuckDB ports use `EXTRACT(ISODOW FROM date)`, not `dayofweek()`** —
+  ISODOW matches Presto exactly, so the weekend test `IN (6, 7)` stays correct. Swapping in
+  `dayofweek()` makes Sunday `0`, which silently drops it from that test and halves your
+  weekend counts without erroring.
+- **Guarding division.** Use `GREATEST(denominator, <floor>)` to floor a denominator, not
+  `NULLIF(denominator, <floor>)`. `NULLIF` only nulls the value when it *equals* the second
+  argument, so `NULLIF(x, 0.001)` lets a genuine zero straight through — and `0/0` is `NaN`,
+  which DuckDB compares as *greater than* everything. A threshold like `ratio > 5` then matches.
+  Trino raises on division by zero instead. Same defect, two different symptoms.
 - `STDDEV_POP()` — available in Trino/Presto, DuckDB, and BigQuery alike.
 
 ---
