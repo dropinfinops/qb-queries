@@ -4,6 +4,23 @@
 New-region activity with no prior billing history is the billing-observable fingerprint of
 credential compromise.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb09-unauthorized-compute/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb09-unauthorized-compute/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb09-unauthorized-compute/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **6 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 When an attacker obtains cloud credentials — via a leaked environment variable, a repository

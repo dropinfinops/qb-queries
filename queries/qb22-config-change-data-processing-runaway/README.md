@@ -8,6 +8,23 @@ cost guardrails** — a new NAT path, a re-routed egress, an inspection/firewall
 than organic growth. Real growth moves compute *and* data-processing together; a config change
 moves only the bytes. Left alone it bleeds quietly for weeks because no single day looks alarming.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb22-config-change-data-processing-runaway/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb22-config-change-data-processing-runaway/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **1 row**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## The triad (all three must hold, per subaccount)
 
 | Signal | Rule | Why |

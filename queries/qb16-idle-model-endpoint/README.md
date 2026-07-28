@@ -4,6 +4,23 @@
 receiving fewer than 100 invocations in 7 days. The model is deployed, the meter is
 running, and nobody is calling it.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb16-idle-model-endpoint/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb16-idle-model-endpoint/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb16-idle-model-endpoint/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **2 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 SageMaker real-time inference endpoints have a fundamental billing property: they cannot

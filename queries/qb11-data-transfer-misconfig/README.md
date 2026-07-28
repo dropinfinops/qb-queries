@@ -4,6 +4,23 @@
 a signature of architecture-level data routing inefficiencies that compound silently as
 traffic grows.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb11-data-transfer-misconfig/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb11-data-transfer-misconfig/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb11-data-transfer-misconfig/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **3 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 Two sub-patterns with a shared root cause: traffic taking an expensive path when a free or

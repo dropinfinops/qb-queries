@@ -4,6 +4,23 @@
 for that service, and more than 80% of the billing rows carrying no workload attribution
 tags. The signature of a stolen API key being actively abused.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb21-compromised-api-credential/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb21-compromised-api-credential/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb21-compromised-api-credential/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **2 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 AI API keys exposed in public code repositories, shared in Slack channels, embedded in

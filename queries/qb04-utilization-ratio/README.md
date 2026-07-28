@@ -8,6 +8,23 @@
 over a 30-day window — a signal for committed capacity where actual consumption is a
 fraction of what was provisioned.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb04-utilization-ratio/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb04-utilization-ratio/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb04-utilization-ratio/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **2 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects (intent)
 
 Reserved Instance or Savings Plan capacity that was purchased for a workload which has since

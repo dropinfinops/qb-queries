@@ -3,6 +3,23 @@
 **Pattern:** A resource's cost in the last 3 days is more than double its own 30-day
 historical baseline. Something changed recently and the bill reflects it.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb02-usage-spike/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb02-usage-spike/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb02-usage-spike/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **6 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 Cost spikes driven by increased consumption on an existing resource — not a price change,

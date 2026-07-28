@@ -3,6 +3,23 @@
 **Pattern:** A resource has been running above 1.5× its historical baseline for at least
 4 of the last 7 days. Something changed and nobody fixed it.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb03-runaway-cost-acceleration/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb03-runaway-cost-acceleration/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb03-runaway-cost-acceleration/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **11 rows**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 QB03 fires on persistence, not magnitude. A 10× spike for 2 days is QB02's domain. QB03

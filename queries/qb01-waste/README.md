@@ -3,6 +3,23 @@
 **Pattern:** A resource is being charged at its normal rate while delivering little or no
 measurable consumption. The bill keeps coming; the workload has effectively stopped.
 
+## Run it
+
+From the `./run.sh` prompt. Three acts, each answering a different question:
+
+```sql
+.read queries/qb01-waste/preflight.duckdb.sql    -- CHECK: can this data answer the question?
+.read queries/qb01-waste/diagnostic.duckdb.sql   -- LEARN: the ranked field, rules as pass/fail flags
+.read queries/qb01-waste/query.duckdb.sql        -- TRUST: what actually fires
+```
+
+Against the sample bill the detector returns **1 row**. Run
+`python3 tools/verify_corpus.py` to check every pattern at once.
+
+**Reading a zero row.** Zero rows with every preflight check `PASS` is a real, honest zero —
+the bill is clean on this pattern. Zero rows with any check `FAIL` means the data cannot
+answer the question at all, which is a blind spot, not a clean bill.
+
 ## What this detects
 
 Two sub-patterns share the same root cause — cost without consumption:
