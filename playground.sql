@@ -7,12 +7,26 @@
 -- they'd return nothing. The parquet on disk never changes — only this view is shifted,
 -- recomputed every time you start the playground.
 
+-- One resource in the corpus is tagged "weekly-profile": "business-hours" -- a dev
+-- box billed flat 24/7 whose CPU is only used on weekdays. Its weekend dip is applied
+-- HERE, against the shifted date, rather than baked into the parquet. The shift above
+-- changes by one day every day, so a weekday pattern frozen into the file would rotate
+-- through the week (Saturday becomes Wednesday tomorrow) and the weekday-sensitive
+-- detectors -- QB07, QB12 -- would fire or not depending on what day you ran them.
+-- Deriving it from the shifted date keeps the weekly shape stable while the data
+-- stays current. Cost is untouched: it is flat every day, which is the whole point.
 CREATE OR REPLACE VIEW bill AS
 SELECT b.* REPLACE (
   b.chargeperiodstart  + to_days(o.off::INT) AS chargeperiodstart,
   b.chargeperiodend    + to_days(o.off::INT) AS chargeperiodend,
   b.billingperiodstart + to_days(o.off::INT) AS billingperiodstart,
-  b.billingperiodend   + to_days(o.off::INT) AS billingperiodend
+  b.billingperiodend   + to_days(o.off::INT) AS billingperiodend,
+  CASE
+    WHEN b.tags LIKE '%"weekly-profile": "business-hours"%'
+     AND EXTRACT(ISODOW FROM (b.chargeperiodstart + to_days(o.off::INT))) IN (6, 7)
+    THEN b.consumedquantity * 0.05
+    ELSE b.consumedquantity
+  END AS consumedquantity
 )
 FROM read_parquet('samples/*/*.parquet') b
 CROSS JOIN (

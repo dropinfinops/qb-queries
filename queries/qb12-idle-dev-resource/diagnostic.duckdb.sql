@@ -57,15 +57,15 @@ scored AS (
         ROUND(avg_weekend_cost,  4) AS avg_weekend_cost,
         ROUND(avg_weekday_qty,   4) AS avg_weekday_qty,
         ROUND(avg_weekend_qty,   4) AS avg_weekend_qty,
-        ROUND(avg_weekday_qty / NULLIF(avg_weekend_qty, 0.001), 2)    AS weekday_weekend_qty_ratio,
-        ROUND(avg_weekend_cost / NULLIF(avg_weekday_cost, 0.001), 4)  AS weekend_billing_ratio,
+        ROUND(avg_weekday_qty / GREATEST(avg_weekend_qty, 0.001), 2)    AS weekday_weekend_qty_ratio,
+        ROUND(avg_weekend_cost / GREATEST(avg_weekday_cost, 0.001), 4)  AS weekend_billing_ratio,
         ROUND(total_cost_30d, 4)    AS total_cost_30d,
         days_seen
     FROM resource_segments
         WHERE total_cost_30d > 1
 )
 SELECT
-    regexp_extract(resourceid, '[^/]+$') AS resource, providername, ROUND(total_cost_30d,2) AS total_cost_30d, days_seen, ROUND(avg_weekday_qty,3) AS avg_weekday_qty, ROUND(avg_weekend_qty,3) AS avg_weekend_qty, ROUND(avg_weekday_qty / NULLIF(avg_weekend_qty,0.001),2) AS qty_ratio, ROUND(avg_weekend_cost / NULLIF(avg_weekday_cost,0.001),3) AS billing_ratio,
+    regexp_extract(resourceid, '[^/]+$') AS resource, providername, ROUND(total_cost_30d,2) AS total_cost_30d, days_seen, ROUND(avg_weekday_qty,3) AS avg_weekday_qty, ROUND(avg_weekend_qty,3) AS avg_weekend_qty, ROUND(avg_weekday_qty / GREATEST(avg_weekend_qty,0.001),2) AS qty_ratio, ROUND(avg_weekend_cost / GREATEST(avg_weekday_cost,0.001),3) AS billing_ratio,
     (qty_ratio > 5) AS activity_gap,
     (billing_ratio > 0.70) AS flat_billing,
     (total_cost_30d > 50) AS material,

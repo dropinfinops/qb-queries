@@ -67,14 +67,14 @@ SELECT
     ROUND(avg_weekend_cost,  4) AS avg_weekend_cost,
     ROUND(avg_weekday_qty,   4) AS avg_weekday_qty,
     ROUND(avg_weekend_qty,   4) AS avg_weekend_qty,
-    ROUND(avg_weekday_qty / NULLIF(avg_weekend_qty, 0.001), 2)    AS weekday_weekend_qty_ratio,
-    ROUND(avg_weekend_cost / NULLIF(avg_weekday_cost, 0.001), 4)  AS weekend_billing_ratio,
+    ROUND(avg_weekday_qty / GREATEST(avg_weekend_qty, 0.001), 2)    AS weekday_weekend_qty_ratio,
+    ROUND(avg_weekend_cost / GREATEST(avg_weekday_cost, 0.001), 4)  AS weekend_billing_ratio,
     ROUND(total_cost_30d, 4)    AS total_cost_30d,
     days_seen
 FROM resource_segments
 WHERE total_cost_30d > 50       -- $50 minimum 30-day cost; adjust for your scale
   AND days_seen >= 21           -- must have >=21 days of data to establish a pattern
-  AND avg_weekday_qty / NULLIF(avg_weekend_qty, 0.001) > 5   -- weekday activity 5× weekend
-  AND avg_weekend_cost / NULLIF(avg_weekday_cost, 0.001) > 0.70  -- but billing barely drops
+  AND avg_weekday_qty / GREATEST(avg_weekend_qty, 0.001) > 5   -- weekday activity 5× weekend
+  AND avg_weekend_cost / GREATEST(avg_weekday_cost, 0.001) > 0.70  -- but billing barely drops
 ORDER BY total_cost_30d DESC
 LIMIT 25

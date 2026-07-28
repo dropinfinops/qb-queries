@@ -63,7 +63,7 @@ SELECT r.resourceid, r.service, r.provider,
        b.avg_early_15d_cost,
        b.avg_recent_15d_cost,
        ROUND(r.avg_3d_cost / NULLIF(b.avg_30d_cost, 0), 4)                          AS cost_acceleration_ratio,
-       ROUND((r.avg_3d_cost - b.avg_30d_cost) / NULLIF(b.stddev_30d_cost, 0.001), 3) AS spike_strength
+       ROUND((r.avg_3d_cost - b.avg_30d_cost) / GREATEST(b.stddev_30d_cost, 0.001), 3) AS spike_strength
 FROM recent r
 JOIN baseline b ON r.resourceid = b.resourceid
 WHERE b.avg_30d_cost > 0.01  -- minimum baseline cost; raise to suppress noise
