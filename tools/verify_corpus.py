@@ -15,12 +15,26 @@ Usage:  python3 tools/verify_corpus.py [--verbose]
 """
 import json
 import pathlib
+import re
 import subprocess
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 QDIR = REPO / "queries"
 INIT = REPO / "playground.sql"
+
+
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def real_errors(stderr: str) -> str:
+    """Strip DuckDB's own chatter so only genuine errors remain.
+
+    v1.5.x announces '-- Loading resources from <init file>' on STDERR (colour-coded).
+    Treating any stderr as failure made every detector report ERROR on that version.
+    """
+    lines = [ln.strip() for ln in ANSI.sub("", stderr).splitlines() if ln.strip()]
+    return "\n".join(ln for ln in lines if not ln.startswith("-- Loading resources from"))
 
 
 def duck(sql: str, json_out: bool = False):
@@ -32,12 +46,26 @@ def duck(sql: str, json_out: bool = False):
         cmd += ["-noheader", "-list"]
     cmd += ["-c", sql]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=REPO)
-    return r.returncode == 0 and not r.stderr.strip(), (r.stdout or r.stderr).strip()
+    err = real_errors(r.stderr)
+    return r.returncode == 0 and not err, (r.stdout or err).strip()
 
 
 def body(path: pathlib.Path) -> str:
     """The file's SQL with the trailing semicolon stripped, safe to nest."""
     return path.read_text().rstrip().rstrip(";")
+
+
+def check_terminator(d: pathlib.Path):
+    """Every act file must end its final statement with ';'. The interactive shell's
+    .read buffers an unterminated statement forever — no table, no error — while
+    wrapped/-c execution auto-runs at EOF, so only this check catches it."""
+    missing = []
+    for f in sorted(d.glob("*.duckdb.sql")):
+        code = [l for l in f.read_text().splitlines()
+                if l.strip() and not l.strip().startswith("--")]
+        if code and not code[-1].rstrip().endswith(";"):
+            missing.append(f.name)
+    return missing
 
 
 def check_preflight(d: pathlib.Path):
@@ -101,6 +129,10 @@ def main() -> int:
         pre, fails = check_preflight(d)
         dg, dn = check_diagnostic(d)
         det, n, headline = check_detector(d)
+        unterminated = check_terminator(d)
+        if unterminated:
+            det = "NOSEMI"
+            headline = "missing ';' → silently buffers in the interactive shell: " + ", ".join(unterminated)
         if pre != "PASS" or dg != "ok" or det != "ok":
             bad += 1
         print(f"{d.name:<44} {pre:<6} {dg:<6} {str(n):<6} {headline}")

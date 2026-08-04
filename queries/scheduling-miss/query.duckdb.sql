@@ -1,31 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Scheduling Miss: Scheduling Miss — weekend cost >= 85% of weekday cost
---
--- Detects resources that should idle on weekends but don't. The signal is the
--- absence of expected cost reduction, not a cost spike.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---   EXTRACT(ISODOW FROM ) returns 1=Monday … 7=Sunday (ISO 8601) in Trino/Presto.
---   DuckDB note: ISODOW is used (1=Monday ... 7=Sunday) to match the Presto
---   day_of_week semantics. Do NOT swap in dayofweek() -- it returns 0=Sunday,
---   which would silently drop Sunday from IN (6, 7) and undercount weekend idle.
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   x_usagetype   (AWS extension) — used here only to exclude data transfer rows from the
---                                   compute cost comparison. Remove this filter if your FOCUS
---                                   export does not include x_usagetype.
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/scheduling-miss/query.duckdb.sql
-
+-- Scheduling Miss — weekend cost >= 85% of weekday cost
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/scheduling-miss/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown')      AS service,
@@ -72,4 +48,4 @@ FROM resource_schedule
 WHERE avg_weekday_cost > 0.01  -- minimum weekday cost; raise to suppress noise
   AND avg_weekend_cost / NULLIF(avg_weekday_cost, 0) >= 0.85
 ORDER BY weekend_weekday_ratio DESC
-LIMIT 25
+LIMIT 25;

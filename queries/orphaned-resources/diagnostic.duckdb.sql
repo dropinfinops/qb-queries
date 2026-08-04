@@ -1,21 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Orphaned Resources -- Waste -- full-rate billing with near-zero consumption : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   idle_days = near-zero consumption on >= 5 days
---   starved   = consumption per dollar under 0.1
---   FIRES     = EITHER condition (this detector is a disjunction)
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/orphaned-resources/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/orphaned-resources/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,

@@ -1,19 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Cost Spike: Usage Spike — recent 3-day cost avg > 2× 30-day baseline
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---        Adjust the 0.01 cost floor to match your minimum meaningful daily spend.
---
--- DIALECT: Athena / Trino / Presto.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   resourcetype   (FOCUS 1.1+)  — will be null on FOCUS 1.0 exports; safe to include
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/cost-spike/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,

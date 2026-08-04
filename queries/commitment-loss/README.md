@@ -1,4 +1,4 @@
-# Commitment Loss — Commitment Loss
+# Commitment Loss
 
 **Pattern:** A Reserved Instance, Savings Plan, or Committed Use Discount has started
 generating significantly more `Unused` spend relative to `Used` spend in the last 7 days

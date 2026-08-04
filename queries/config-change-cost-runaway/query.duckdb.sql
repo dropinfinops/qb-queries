@@ -1,19 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Config-Change Cost Runaway -- Config-Change Data-Processing Runaway (DuckDB)
--- DIALECT: DuckDB. (See query.sql in this folder for the Athena/Trino/Presto version.)
---
--- What it catches: per-GB data-processing spend (NAT-gateway bytes, cross-AZ transfer,
--- traffic-inspection bytes) STEPS UP and STAYS elevated while compute stays flat. That is
--- the billing shape of a networking/routing config change shipped without cost guardrails --
--- not an organic traffic surge (which would move compute too).
---
--- The triad (all three must hold, per subaccount):
---   1. STEP        -- recent data-processing daily cost >= 2.5x the prior-30-day baseline
---   2. FLAT COMPUTE-- recent compute daily cost < 1.3x its baseline (rules out real growth)
---   3. PERSISTENCE -- elevated on >= 5 of the last 7 days (rules out a one-day blip)
---
--- Runs against the `bill` view that ./run.sh loads for you. At the prompt:
---   .read queries/config-change-cost-runaway/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/config-change-cost-runaway/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH dp_daily AS (
     SELECT
         subaccountid,

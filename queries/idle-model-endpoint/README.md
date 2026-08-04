@@ -1,4 +1,4 @@
-# Idle Model Endpoint — Idle Model Endpoint
+# Idle Model Endpoint
 
 **Pattern:** A SageMaker real-time inference endpoint is billing for instance-hours while
 receiving fewer than 100 invocations in 7 days. The model is deployed, the meter is

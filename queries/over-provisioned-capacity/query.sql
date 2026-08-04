@@ -1,29 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Over-Provisioned Capacity: Utilization Ratio — consumed quantity < 30% of pricing quantity
---
--- *** DESIGN LIMITATION — READ BEFORE RUNNING ***
--- This query computes AVG(consumedquantity / pricingquantity) across all usage rows.
--- In FOCUS 1.0, consumedquantity and pricingquantity use the same unit for most services,
--- making the ratio ~1.0 for the majority of on-demand usage rows. The ratio is only
--- meaningfully sub-1.0 for:
---   (a) Reserved Instance / Savings Plan rows where committed hours are partially matched
---   (b) Services where ConsumedUnit and PricingUnit differ by a fixed block size
--- On-demand EC2 instances at 100% utilization will typically produce a ratio of 1.0 and
--- will NOT appear in results. This query is most useful for committed/reserved capacity
--- validation, not general compute utilization checking.
--- This query is DEFERRED from the DropInFinOps active detector set pending a redesign that
--- uses CommitmentDiscountStatus rows directly (see Commitment Loss for the commitment-aware approach).
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---
--- DIALECT: Athena / Trino / Presto.
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   pricingquantity, consumedunit, chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/over-provisioned-capacity/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown') AS service,

@@ -1,18 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Config-Change Cost Runaway -- Config-Change Data-Processing Runaway : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql / query.sql) keeps ONLY the
--- subaccounts that trip all three conditions -- in this sample that's a single row.
---
--- This view instead RANKS the top 10 subaccounts by the data-processing step and shows the
--- three triad conditions as pass/fail flags, so you can see the mechanics: how the real
--- runaway separates from normal accounts, and exactly which rule each account passes or fails.
--- Run it, then run query.duckdb.sql to see the detector keep only the confirmed one.
---
---   step  = data-processing spend >= 2.5x prior-30d baseline
---   flat  = compute growth < 1.3x  (rules out a real traffic surge)
---   days  = elevated on >= 5 of the last 7 days
---   FIRES = all three true
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/config-change-cost-runaway/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH dp_daily AS (
     SELECT
         subaccountid,

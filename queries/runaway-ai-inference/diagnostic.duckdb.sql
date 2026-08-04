@@ -1,20 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Runaway AI Inference -- Runaway Inference -- AI spend beyond statistical norm : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   sigma_breach = recent average is >2 standard deviations above baseline
---   has_history  = account must have >$1/day of prior inference spend
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/runaway-ai-inference/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/runaway-ai-inference/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH inference_daily AS (
     SELECT
         subaccountid,

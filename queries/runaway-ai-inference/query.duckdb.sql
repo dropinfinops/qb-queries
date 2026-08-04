@@ -1,32 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Runaway AI Inference: Runaway Inference — AI inference billing spike > 2σ above 23-day baseline
---
--- Detects AWS Bedrock inference spend that has spiked suddenly above the account's own
--- baseline. Fires on suddenness, not magnitude: a workload that gradually grows 2× over
--- 30 days does not fire; a workload stable at $5/day that hits $40/day for 3 days fires.
---
--- The 2σ threshold self-calibrates: high-variance accounts require a larger absolute spike
--- to trigger than stable, low-variance accounts.
---
--- *** AWS-SPECIFIC QUERY ***
--- This query uses servicename LIKE '%Bedrock%' and x_usagetype LIKE '%InvokeModel%' to
--- isolate AWS Bedrock inference rows. It does not cover Azure OpenAI or Vertex AI.
--- x_usagetype is an AWS Data Exports extension column, not a FOCUS 1.0 standard field.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   subaccountid, chargeperiodstart, billedcost, servicename, chargecategory, chargeclass
--- Provider-specific columns:
---   x_usagetype (AWS extension) — used to isolate Bedrock InvokeModel rows
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/runaway-ai-inference/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/runaway-ai-inference/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH inference_daily AS (
     SELECT
         subaccountid,
@@ -76,4 +51,4 @@ JOIN baseline b ON r.subaccountid = b.subaccountid
 WHERE r.recent_avg_daily_cost > b.avg_daily_cost + 2.0 * b.stddev_daily_cost
   AND b.avg_daily_cost > 1.0  -- baseline floor: account must have >$1/day inference history
 ORDER BY spike_ratio DESC
-LIMIT 25
+LIMIT 25;

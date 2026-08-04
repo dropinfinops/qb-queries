@@ -1,4 +1,4 @@
-# Idle Developer Resources — Idle Developer Resource
+# Idle Developer Resources
 
 **Pattern:** A resource is used almost exclusively during weekday business hours (consumption
 ratio 5:1 or more, weekday vs. weekend) but billed at the same flat rate 24/7. The billing

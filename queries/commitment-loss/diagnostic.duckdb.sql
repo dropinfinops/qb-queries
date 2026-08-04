@@ -1,22 +1,7 @@
--- Commitment Loss -- Commitment Loss -- RI/SP utilization getting worse : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   severe/moderate = waste ratio WORSENED by >20pp / >15pp vs baseline
---   stranded        = zero Used rows this week
---   NOTE: this detector needs the ratio to CHANGE. A commitment that is
---         steadily 40% unused every week never fires -- by design.
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/commitment-loss/diagnostic.duckdb.sql
-
+-- SPDX-License-Identifier: Apache-2.0
+-- Commitment Loss -- RI/SP utilization getting worse : DIAGNOSTIC / TEACHING view (DuckDB)
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/commitment-loss/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH daily_commitment AS (
     SELECT
         commitmentdiscountid,

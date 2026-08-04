@@ -1,22 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Cost Spike: Usage Spike — recent 3-day cost avg > 2× 30-day baseline
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   resourcetype   (FOCUS 1.1+)  — will be null on FOCUS 1.0 exports; safe to include
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/cost-spike/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/cost-spike/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,
@@ -69,4 +54,4 @@ JOIN baseline b ON r.resourceid = b.resourceid
 WHERE b.avg_30d_cost > 0.01  -- minimum baseline cost; raise to suppress noise
   AND r.avg_3d_cost > b.avg_30d_cost * 2.0
 ORDER BY (avg_3d_cost - avg_30d_cost) DESC
-LIMIT 25
+LIMIT 25;

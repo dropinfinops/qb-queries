@@ -1,23 +1,7 @@
--- Unauthorized Compute -- Unauthorized Compute : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY spend in regions
--- that appeared for the first time within the last 30 days. This view RANKS every region
--- in the bill by how recently it was first seen, so you can watch the new ones separate
--- from the estate's long-standing footprint.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   new_region = region first appeared within the last 30 days
---   material   = more than trivial spend landed there
---   fires      = both (a brand-new region with real money in it)
---
--- The point of the ranking: a region first seen 300 days ago with heavy spend is your
--- normal estate. A region first seen 6 days ago with heavy spend is the finding.
---
--- Run it (from the ./run.sh prompt):
---   .read queries/unauthorized-compute/diagnostic.duckdb.sql
-
+-- SPDX-License-Identifier: Apache-2.0
+-- Unauthorized Compute : DIAGNOSTIC / TEACHING view (DuckDB)
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/unauthorized-compute/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH region_first_seen AS (
     SELECT subaccountid,
            regionid,

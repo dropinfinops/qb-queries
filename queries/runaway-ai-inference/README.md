@@ -1,4 +1,4 @@
-# Runaway AI Inference — Runaway Inference
+# Runaway AI Inference
 
 **Pattern:** AI inference billing has spiked suddenly above this account's own 23-day
 baseline by more than 2 standard deviations. An agent loop, recursive tool call, or

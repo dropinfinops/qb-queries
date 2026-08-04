@@ -1,4 +1,4 @@
-# Orphaned Knowledge Base — Orphaned Bedrock Knowledge Base OCU
+# Orphaned Knowledge Base
 
 **Pattern:** OpenSearch Serverless OCU charges are accumulating in an account where Bedrock
 inference activity is less than 10% of the OCU cost. A Knowledge Base vector store is

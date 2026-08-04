@@ -1,4 +1,4 @@
-# Unauthorized Compute — Unauthorized Compute
+# Unauthorized Compute
 
 **Pattern:** Spend appearing in a cloud region that this account has never used before.
 New-region activity with no prior billing history is the billing-observable fingerprint of

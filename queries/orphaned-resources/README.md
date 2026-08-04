@@ -1,4 +1,4 @@
-# Orphaned Resources — Waste
+# Orphaned Resources
 
 **Pattern:** A resource is being charged at its normal rate while delivering little or no
 measurable consumption. The bill keeps coming; the workload has effectively stopped.

@@ -1,4 +1,4 @@
-# Cost Spike — Usage Spike
+# Cost Spike
 
 **Pattern:** A resource's cost in the last 3 days is more than double its own 30-day
 historical baseline. Something changed recently and the bill reflects it.

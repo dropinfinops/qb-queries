@@ -1,21 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Compromised API Key -- Compromised API Credential : PREFLIGHT / data-readiness check (DuckDB)
---
--- Run this BEFORE the detector. It answers one question: can this data even answer
--- the question Compromised API Key asks?
---
---   0 rows from the detector + every check PASS  =  a real, honest zero.
---                                                   Your bill is clean on this pattern.
---   0 rows from the detector + any check FAIL    =  your data cannot answer this.
---                                                   That is a blind spot, not a clean bill.
---
--- Those two outcomes look identical without this step. Read them differently.
---
--- Read it as the first act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
--- Run it (from the ./run.sh prompt):
---   .read queries/compromised-api-key/preflight.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/compromised-api-key/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH win AS (
     SELECT *
     FROM bill

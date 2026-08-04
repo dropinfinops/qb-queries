@@ -1,4 +1,4 @@
-# Data Transfer Misconfiguration — Data Transfer Misconfiguration
+# Data Transfer Misconfiguration
 
 **Pattern:** Networking costs are disproportionate to compute costs for the same account —
 a signature of architecture-level data routing inefficiencies that compound silently as

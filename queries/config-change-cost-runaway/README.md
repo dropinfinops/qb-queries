@@ -1,4 +1,4 @@
-# Config-Change Cost Runaway — Config-Change Data-Processing Runaway
+# Config-Change Cost Runaway
 
 **Detects:** per-GB data-processing spend (NAT-gateway bytes, cross-AZ transfer, traffic
 inspection) that steps up sharply and *stays* elevated **while compute stays flat**.

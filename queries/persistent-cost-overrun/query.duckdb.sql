@@ -1,22 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Persistent Cost Overrun: Runaway Cost Acceleration — sustained elevation: 4+ of last 7 days > 1.5× baseline
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   resourcetype   (FOCUS 1.1+)  — will be null on FOCUS 1.0 exports; safe to include
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/persistent-cost-overrun/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/persistent-cost-overrun/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,
@@ -76,4 +61,4 @@ SELECT resourceid, service, provider,
 FROM resource_runaway
 WHERE high_days >= 4
 ORDER BY avg_recent_cost DESC
-LIMIT 25
+LIMIT 25;

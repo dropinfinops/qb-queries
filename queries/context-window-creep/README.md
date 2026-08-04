@@ -1,4 +1,4 @@
-# Context Window Creep — Context Window Creep
+# Context Window Creep
 
 **Pattern:** An AI inference workload's token cost has grown more than 15% month-over-month
 with no corresponding increase in traffic or user load. Prompt inflation is compounding

@@ -1,22 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Orphaned Resources: Waste — resources billing at full rate with near-zero consumption
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   resourcetype   (FOCUS 1.1+)  — will be null on FOCUS 1.0 exports; safe to include
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/orphaned-resources/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/orphaned-resources/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,
@@ -55,4 +40,4 @@ FROM resource_stats
 WHERE avg_daily_cost > 0.01  -- minimum avg daily cost; raise to suppress noise
   AND (near_zero_qty_days >= 5 OR avg_daily_qty < avg_daily_cost * 0.1)
 ORDER BY total_cost DESC
-LIMIT 25
+LIMIT 25;

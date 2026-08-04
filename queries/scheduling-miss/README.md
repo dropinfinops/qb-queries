@@ -1,4 +1,4 @@
-# Scheduling Miss — Scheduling Miss
+# Scheduling Miss
 
 **Pattern:** A resource's weekend cost is at least 85% of its weekday cost — meaning it
 barely reduces spend when the business is closed. Resources with weekday-only workloads

@@ -1,26 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Commitment Loss: Commitment Loss — RI/SP utilization waste ratio deteriorating vs baseline
---
--- Detects committed discounts (Reserved Instances, Savings Plans, CUDs) where the
--- fraction of spend going to 'Unused' rows has increased meaningfully in the last 7 days
--- compared to the prior 30-day baseline. Also flags commitments that have generated zero
--- 'Used' rows for the entire recent window (stranded commitment).
---
--- Dollar floor: total unused spend over 37 days > $16.67 suppresses noise on tiny commitments.
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---
--- DIALECT: Athena / Trino / Presto.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---             and CAST(... AS TIMESTAMP) with CAST(... AS DATETIME)
---
--- FOCUS 1.0 columns used (all standard):
---   commitmentdiscountid, commitmentdiscountstatus, commitmentdiscounttype,
---   effectivecost, subaccountid, chargeperiodstart, chargecategory, chargeclass,
---   servicename, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
-
+-- Commitment Loss — RI/SP utilization waste ratio deteriorating vs baseline
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/commitment-loss/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH daily_commitment AS (
     SELECT
         commitmentdiscountid,

@@ -1,39 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Data Transfer Misconfiguration: Data Transfer Misconfiguration — NAT Gateway byte-processing waste and cross-AZ ratio
---
--- Two sub-signals:
---   nat_ratio     : NatGateway byte-processing cost > 60% of total VPC spend
---                   → high-volume traffic routing through NAT (typically S3/DynamoDB
---                     traffic that should use free Gateway VPC Endpoints instead)
---   cross_az_ratio: Cross-AZ transfer cost > 12% of EC2 cost
---                   → networking charges disproportionate to compute, indicating
---                     resources deployed across Availability Zone boundaries
---
--- Dollar floor: combined networking waste > $100 over 30 days to suppress noise.
---
--- *** PROVIDER NOTE ***
--- This query uses provider-specific x_usagetype values to classify networking costs:
---   AWS:   NatGateway-Bytes, NatGateway-Hours, DataTransfer-Regional-Bytes
---   Azure: NAT Gateway Data Processed, NAT Uptime, VNet Peering (partial mapping)
---   GCP:   NAT Data Processed, Network Inter Zone Data Transfer Out
--- The ratios and thresholds were calibrated against AWS billing patterns. Adjust the
--- CASE expressions and thresholds if running against Azure or GCP FOCUS exports.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---             and CAST(... AS TIMESTAMP) with CAST(... AS DATETIME)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   subaccountid, chargeperiodstart, billedcost, servicename, chargecategory, chargeclass
--- Provider-specific columns:
---   x_usagetype (AWS/Azure/GCP extension) — used for usage type classification
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/data-transfer-misconfiguration/query.duckdb.sql
-
+-- Data Transfer Misconfiguration — NAT Gateway byte-processing waste and cross-AZ ratio
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/data-transfer-misconfiguration/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH networking_daily AS (
     SELECT
         subaccountid,
@@ -96,4 +64,4 @@ WHERE (total_nat_bytes_30d + total_nat_hours_30d) > 0
       OR (total_cross_az_30d / NULLIF(total_ec2_30d, 0)) > 0.12
   )
 ORDER BY total_networking_waste_30d DESC
-LIMIT 25
+LIMIT 25;

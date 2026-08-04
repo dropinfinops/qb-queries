@@ -1,19 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Cost Spike -- Usage Spike -- 3-day cost far above the 30-day baseline : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   spike = recent 3-day average >= 2.0x the 30-day baseline
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/cost-spike/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/cost-spike/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,

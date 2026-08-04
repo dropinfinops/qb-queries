@@ -1,4 +1,4 @@
-# Over-Provisioned Capacity — Utilization Ratio
+# Over-Provisioned Capacity
 
 > **Known design limitation.** This query is included for reference and community review,
 > but has a known semantic issue with FOCUS 1.0 data. Read the limitations section before

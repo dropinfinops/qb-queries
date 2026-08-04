@@ -1,34 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Idle Model Endpoint: Idle Model Endpoint — SageMaker endpoint billing with < 100 invocations in 7 days
---
--- SageMaker real-time inference endpoints cannot scale to zero. Auto Scaling can reduce
--- the minimum instance count to 1, but never 0. The meter runs from CreateEndpoint until
--- DeleteEndpoint — there is no sleep mode and no credit for zero-traffic periods.
---
--- This query joins endpoint cost rows (x_usagetype LIKE '%Hosting%') against invocation
--- count rows (x_usagetype LIKE '%Invocations%'). An endpoint with < 100 invocations over
--- 7 days while billing > $10 is idle (100 invocations = ~15/day, well below any real
--- serving workload which typically sees 100–10,000+ calls/day).
---
--- *** AWS-SPECIFIC QUERY ***
--- Uses servicename LIKE '%SageMaker%' and x_usagetype patterns for Hosting/Invocations.
--- x_usagetype is an AWS Data Exports extension column, not a FOCUS 1.0 standard field.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   servicename, chargecategory, chargeclass
--- Provider-specific columns:
---   x_usagetype (AWS extension) — used to separate endpoint-hour from invocation rows
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/idle-model-endpoint/query.duckdb.sql
-
+-- Idle Model Endpoint — SageMaker endpoint billing with < 100 invocations in 7 days
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/idle-model-endpoint/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH endpoint_cost AS (
     SELECT
         subaccountid,
@@ -76,4 +49,4 @@ LEFT JOIN invocation_count i
 WHERE e.endpoint_cost_7d > 10.0                            -- $10 floor: any GPU catches; CPU micro-instances excluded
   AND COALESCE(i.total_invocations_7d, 0) < 100            -- < 100 invocations in 7 days
 ORDER BY e.endpoint_cost_7d DESC
-LIMIT 25
+LIMIT 25;

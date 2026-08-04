@@ -1,22 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Untagged Spend: Governance Gap — significant spend with no cost allocation tags
---
--- Resources above the cost threshold with null or empty tags have no owner,
--- no cost centre, and no environment label — a governance process gap.
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---        The HAVING threshold below is 0.01 * 30 = $0.30 over 30 days. Raise the
---        multiplier (or replace with an absolute value) to focus on material untagged spend.
---
--- DIALECT: Athena / Trino / Presto.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---
--- FOCUS 1.0 columns used (all standard):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, tags,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/untagged-spend/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown')      AS service,

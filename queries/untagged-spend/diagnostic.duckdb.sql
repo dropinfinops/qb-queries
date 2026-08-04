@@ -1,24 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Untagged Spend -- Governance Gap : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY untagged resources
--- above a spend floor. This view shows the whole tagging picture per subaccount -- how much
--- spend carries ownership tags and how much does not -- so the gap is a proportion you can
--- see rather than a list you have to count.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   untagged_pct = share of 30-day spend with no tags at all
---   has_gap      = any untagged spend present
---   material     = untagged spend above the 30-day floor
---   fires        = both (real money with nobody's name on it)
---
--- Unlike most detectors here, Untagged Spend is a COVERAGE measure, not an anomaly: a healthy
--- estate trends toward 0% untagged. Watch the percentage, not a single row.
---
--- Run it (from the ./run.sh prompt):
---   .read queries/untagged-spend/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/untagged-spend/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown')      AS service,

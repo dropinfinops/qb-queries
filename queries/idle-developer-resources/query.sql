@@ -1,28 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Idle Developer Resources: Idle Developer Resource — flat billing with business-hours-only activity
---
--- Signal: weekday consumed quantity >> weekend quantity (5× threshold), but weekend
--- billing cost is close to weekday cost (>70% ratio). The resource is only used during
--- business hours but billed 24/7 at the same flat rate.
---
--- Distinct from Scheduling Miss (Scheduling Miss):
---   Scheduling Miss catches high absolute weekend COST on batch jobs / always-on services.
---   Idle Developer Resources catches flat billing with near-zero weekend ACTIVITY — cost per unit of work
---   is dramatically higher on weekends than weekdays, but the absolute cost looks normal.
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---        The $50 / 21-day floor targets resources with material sustained spend.
---
--- DIALECT: Athena / Trino / Presto.
---   DAY_OF_WEEK() returns 1=Monday … 7=Sunday (ISO 8601) in Trino/Presto.
---   BigQuery/MySQL return 1=Sunday … 7=Saturday — adjust day_of_week BETWEEN 1 AND 5
---   and IN (6, 7) accordingly.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, effectivecost,
---   consumedquantity, chargecategory, chargeclass, providername, invoiceissuername
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/idle-developer-resources/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT
         resourceid,

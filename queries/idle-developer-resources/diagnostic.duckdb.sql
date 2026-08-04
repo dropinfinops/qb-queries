@@ -1,22 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Idle Developer Resources -- Idle Developer Resource -- flat billing, business-hours-only activity : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   activity_gap = weekday consumption > 5x weekend  (the resource is idle)
---   flat_billing = weekend cost still >70% of weekday (you are billed anyway)
---   BOTH must hold. A resource whose COST drops with usage is working
---   correctly -- that is why billing_ratio is the discriminating rule.
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/idle-developer-resources/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/idle-developer-resources/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT
         resourceid,

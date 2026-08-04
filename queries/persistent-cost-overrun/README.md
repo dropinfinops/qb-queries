@@ -1,4 +1,4 @@
-# Persistent Cost Overrun — Runaway Cost Acceleration
+# Persistent Cost Overrun
 
 **Pattern:** A resource has been running above 1.5× its historical baseline for at least
 4 of the last 7 days. Something changed and nobody fixed it.

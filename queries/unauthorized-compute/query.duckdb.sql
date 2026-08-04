@@ -1,31 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Unauthorized Compute: Unauthorized Compute — spend in a region with no prior billing history
---
--- Detection rule: find account/region pairs whose FIRST billing row appeared within the
--- last 30 days. Any spend in a brand-new region for that account is anomalous.
--- No cost threshold is required — any spend in a historically absent region is suspicious.
--- Scoped per (subaccountid, regionid) so that an established region in account A does not
--- mask that same region being brand-new in a compromised account B.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---        The per-resource cost floor (0.01) suppresses trivial noise. Attackers launching
---        real compute generate material spend quickly.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, regionid, servicename, subaccountid, chargeperiodstart, billedcost,
---   consumedquantity, chargecategory, chargeclass, pricingcategory, tags,
---   providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   x_usagetype   (AWS extension) — included as informational output only, not a filter
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/unauthorized-compute/query.duckdb.sql
-
+-- Unauthorized Compute — spend in a region with no prior billing history
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/unauthorized-compute/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH region_first_seen AS (
     SELECT subaccountid,
            regionid,
@@ -64,4 +40,4 @@ WITH region_first_seen AS (
 )
 SELECT * FROM new_region_spend
 ORDER BY total_cost DESC
-LIMIT 40
+LIMIT 40;

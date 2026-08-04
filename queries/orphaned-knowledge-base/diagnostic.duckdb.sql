@@ -1,21 +1,7 @@
+-- SPDX-License-Identifier: Apache-2.0
 -- Orphaned Knowledge Base -- Orphaned Knowledge-Base OCU -- index capacity with no inference : DIAGNOSTIC / TEACHING view (DuckDB)
---
--- This is NOT the detector. The detector (query.duckdb.sql) keeps ONLY the rows that
--- satisfy every condition. This view RANKS the field and exposes each condition as a
--- pass/fail flag, so you can see WHY a row does or does not fire -- and how far the
--- real finding sits from everything else.
---
--- Read it as the middle act: preflight (can the data answer?) -> diagnostic (what does
--- the field look like?) -> query (what actually fires?).
---
---   no_inference = Bedrock inference spend under 10% of the OCU bill
---                  (the index is up, nothing is querying it)
---   material     = >$50 of OCU cost over 30 days
---   fires = the combination the detector requires
---
--- Run it (from the ./run.sh prompt):
---   .read queries/orphaned-knowledge-base/diagnostic.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/orphaned-knowledge-base/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH ocu_daily AS (
     SELECT
         subaccountid,

@@ -1,34 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Over-Provisioned Capacity: Utilization Ratio — consumed quantity < 30% of pricing quantity
---
--- *** DESIGN LIMITATION — READ BEFORE RUNNING ***
--- This query computes AVG(consumedquantity / pricingquantity) across all usage rows.
--- In FOCUS 1.0, consumedquantity and pricingquantity use the same unit for most services,
--- making the ratio ~1.0 for the majority of on-demand usage rows. The ratio is only
--- meaningfully sub-1.0 for:
---   (a) Reserved Instance / Savings Plan rows where committed hours are partially matched
---   (b) Services where ConsumedUnit and PricingUnit differ by a fixed block size
--- On-demand EC2 instances at 100% utilization will typically produce a ratio of 1.0 and
--- will NOT appear in results. This query is most useful for committed/reserved capacity
--- validation, not general compute utilization checking.
--- This query is DEFERRED from the DropInFinOps active detector set pending a redesign that
--- uses CommitmentDiscountStatus rows directly (see Commitment Loss for the commitment-aware approach).
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost, consumedquantity,
---   pricingquantity, consumedunit, chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/over-provisioned-capacity/query.duckdb.sql
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/over-provisioned-capacity/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown') AS service,
@@ -72,4 +45,4 @@ WHERE avg_daily_cost > 0.01  -- minimum avg daily cost; raise to suppress noise
   -- consumed vs priced in the way compute is. These would produce misleading ratios.
   AND consumedunit NOT IN ('GB-Mo', 'GB', 'GB-Month', 'GiB-Mo', 'GiB')
 ORDER BY total_cost DESC
-LIMIT 25
+LIMIT 25;

@@ -1,28 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Runaway AI Inference: Runaway Inference — AI inference billing spike > 2σ above 23-day baseline
---
--- Detects AWS Bedrock inference spend that has spiked suddenly above the account's own
--- baseline. Fires on suddenness, not magnitude: a workload that gradually grows 2× over
--- 30 days does not fire; a workload stable at $5/day that hits $40/day for 3 days fires.
---
--- The 2σ threshold self-calibrates: high-variance accounts require a larger absolute spike
--- to trigger than stable, low-variance accounts.
---
--- *** AWS-SPECIFIC QUERY ***
--- This query uses servicename LIKE '%Bedrock%' and x_usagetype LIKE '%InvokeModel%' to
--- isolate AWS Bedrock inference rows. It does not cover Azure OpenAI or Vertex AI.
--- x_usagetype is an AWS Data Exports extension column, not a FOCUS 1.0 standard field.
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---
--- DIALECT: Athena / Trino / Presto.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   subaccountid, chargeperiodstart, billedcost, servicename, chargecategory, chargeclass
--- Provider-specific columns:
---   x_usagetype (AWS extension) — used to isolate Bedrock InvokeModel rows
-
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/runaway-ai-inference/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH inference_daily AS (
     SELECT
         subaccountid,

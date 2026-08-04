@@ -166,22 +166,22 @@ Some queries use columns that are AWS Data Exports extensions to the FOCUS 1.0 c
 
 | Query | What it detects |
 |---|---|
-| [Orphaned Resources — Waste](queries/orphaned-resources/) | Resources billing at full rate with near-zero consumption |
-| [Cost Spike — Usage Spike](queries/cost-spike/) | 3-day cost avg > 2× 30-day baseline |
-| [Persistent Cost Overrun — Runaway Cost Acceleration](queries/persistent-cost-overrun/) | Sustained cost elevation: 4+ of last 7 days > 1.5× baseline |
-| [Over-Provisioned Capacity — Utilization Ratio](queries/over-provisioned-capacity/) | ⚠️ Committed capacity used < 30% of provisioned — see limitations |
-| [Scheduling Miss — Scheduling Miss](queries/scheduling-miss/) | Weekend cost ≥ 85% of weekday cost on resources that should idle |
-| [Untagged Spend — Governance Gap](queries/untagged-spend/) | Significant spend with no cost allocation tags |
-| [Unauthorized Compute — Unauthorized Compute](queries/unauthorized-compute/) | Spend appearing in a region with no prior billing history |
-| [Commitment Loss — Commitment Loss](queries/commitment-loss/) | RI/SP utilization waste ratio deteriorating vs baseline |
-| [Data Transfer Misconfiguration — Data Transfer Misconfiguration](queries/data-transfer-misconfiguration/) | NAT Gateway byte cost and cross-AZ transfer disproportionate to compute |
-| [Idle Developer Resources — Idle Developer Resource](queries/idle-developer-resources/) | Weekday activity >> weekend activity but billing is flat 24/7 |
-| [Runaway AI Inference — Runaway Inference](queries/runaway-ai-inference/) | AI inference cost spike > 2σ above 23-day baseline (AWS Bedrock) |
-| [Idle Model Endpoint — Idle Model Endpoint](queries/idle-model-endpoint/) | SageMaker real-time endpoint billing with < 100 invocations/7d |
-| [Context Window Creep — Context Window Creep](queries/context-window-creep/) | AI inference token cost growing > 15% month-over-month (AWS Bedrock) |
-| [Orphaned Knowledge Base — Orphaned KB OCU](queries/orphaned-knowledge-base/) | OpenSearch OCU charges with no matching Bedrock inference activity |
-| [Compromised API Key — Compromised API Credential](queries/compromised-api-key/) | AI service spend appearing with zero prior history + high untagged rate |
-| [Config-Change Cost Runaway — Config-Change Data-Processing Runaway](queries/config-change-cost-runaway/) | Per-GB data-processing spend steps up and persists while compute stays flat |
+| [Orphaned Resources](queries/orphaned-resources/) | Resources billing at full rate with near-zero consumption |
+| [Cost Spike](queries/cost-spike/) | 3-day cost avg > 2× 30-day baseline |
+| [Persistent Cost Overrun](queries/persistent-cost-overrun/) | Sustained cost elevation: 4+ of last 7 days > 1.5× baseline |
+| [Over-Provisioned Capacity](queries/over-provisioned-capacity/) | ⚠️ Committed capacity used < 30% of provisioned — see limitations |
+| [Scheduling Miss](queries/scheduling-miss/) | Weekend cost ≥ 85% of weekday cost on resources that should idle |
+| [Untagged Spend](queries/untagged-spend/) | Significant spend with no cost allocation tags |
+| [Unauthorized Compute](queries/unauthorized-compute/) | Spend appearing in a region with no prior billing history |
+| [Commitment Loss](queries/commitment-loss/) | RI/SP utilization waste ratio deteriorating vs baseline |
+| [Data Transfer Misconfiguration](queries/data-transfer-misconfiguration/) | NAT Gateway byte cost and cross-AZ transfer disproportionate to compute |
+| [Idle Developer Resources](queries/idle-developer-resources/) | Weekday activity >> weekend activity but billing is flat 24/7 |
+| [Runaway AI Inference](queries/runaway-ai-inference/) | AI inference cost spike > 2σ above 23-day baseline (AWS Bedrock) |
+| [Idle Model Endpoint](queries/idle-model-endpoint/) | SageMaker real-time endpoint billing with < 100 invocations/7d |
+| [Context Window Creep](queries/context-window-creep/) | AI inference token cost growing > 15% month-over-month (AWS Bedrock) |
+| [Orphaned Knowledge Base](queries/orphaned-knowledge-base/) | OpenSearch OCU charges with no matching Bedrock inference activity |
+| [Compromised API Key](queries/compromised-api-key/) | AI service spend appearing with zero prior history + high untagged rate |
+| [Config-Change Cost Runaway](queries/config-change-cost-runaway/) | Per-GB data-processing spend steps up and persists while compute stays flat |
 
 Each folder has a `README.md` (what it detects + how to read the output), a `query.sql`
 (Athena/Trino), and — where wired into the playground — a `query.duckdb.sql`.

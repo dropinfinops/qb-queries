@@ -1,4 +1,4 @@
-# Untagged Spend — Governance Gap
+# Untagged Spend
 
 **Pattern:** A resource has been accruing real spend for at least part of a 30-day window
 but carries no cost allocation tags. There is no owner, no cost center, and no environment

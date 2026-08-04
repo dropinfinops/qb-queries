@@ -1,39 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Compromised API Key: Compromised API Credential — AI service spend with no prior history + high untagged rate
---
--- Detects stolen or exposed AI API keys being abused. The billing signature:
---   1. AI service spend appearing in a 48-hour window (recent_spend_48h > $50)
---   2. Zero AI billing history for this service in the prior 30 days (ZERO_HISTORY)
---      OR recent spend > 50% of the 30-day baseline (SKU_ESCALATION / SPEND_SPIKE)
---   3. > 80% of recent AI rows carry no workload attribution tags
---
--- The structural asymmetry: legitimate AI API calls come from deployed applications with
--- Environment, Team, Application, and WorkloadId tags. Attacker traffic (curl, Python
--- scripts) carries no attribution headers. The billing rows arrive tagless.
---
--- Detection window: 48 hours (key abuse burns fast, then stops on rotation — opposite of
--- Runaway AI Inference's sustained drift pattern).
---
--- CROSS-CLOUD NOTE:
--- Uses servicecategory = 'AI/ML' which is a standard FOCUS field and captures:
---   AWS:   Amazon Bedrock (servicename), Google Cloud Vertex AI, Azure OpenAI Service
--- Individual servicename values are provider-specific — results are grouped by
--- (subaccountid, servicename) so each provider's AI service appears as a separate row.
---
--- SETUP: Replace 'bill' with your FOCUS billing table name.
---
--- DIALECT: DuckDB — local playground.
---   (See query.sql in this folder for the Athena / Trino / Presto version.)
---             and BETWEEN with appropriate DATE functions
---
--- FOCUS 1.0 columns used (all standard):
---   subaccountid, servicename, servicecategory, effectivecost, chargeperiodstart,
---   chargecategory, chargeclass, tags
-
---
--- Run it (from the ./run.sh prompt):
---   .read queries/compromised-api-key/query.duckdb.sql
-
+-- Compromised API Key — AI service spend with no prior history + high untagged rate
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/compromised-api-key/README.md
+-- DuckDB. Runs against the playground `bill` view (./run.sh). Athena/Trino: query.sql
 WITH ai_baseline AS (
     SELECT
         subaccountid,
@@ -87,4 +55,4 @@ WHERE r.recent_spend_48h > 50.0  -- $50 minimum in 48h; attacker sessions burn f
   )
   AND ROUND(CAST(r.untagged_rows AS DOUBLE) / NULLIF(r.total_rows, 0), 4) > 0.80   -- >80% untagged rows
 ORDER BY r.recent_spend_48h DESC
-LIMIT 25
+LIMIT 25;

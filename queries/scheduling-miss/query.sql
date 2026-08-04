@@ -1,26 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Scheduling Miss: Scheduling Miss — weekend cost >= 85% of weekday cost
---
--- Detects resources that should idle on weekends but don't. The signal is the
--- absence of expected cost reduction, not a cost spike.
---
--- SETUP: Replace 'your_focus_table' with your FOCUS billing table name.
---        Adjust the 0.01 cost floor to match your minimum meaningful daily spend.
---
--- DIALECT: Athena / Trino / Presto.
---   DAY_OF_WEEK() returns 1=Monday … 7=Sunday (ISO 8601) in Trino/Presto.
---   BigQuery/MySQL return 1=Sunday … 7=Saturday — adjust dow IN (6, 7) accordingly.
---   BigQuery: replace DATE_ADD('day', -N, CURRENT_DATE) with DATE_SUB(CURRENT_DATE, INTERVAL N DAY)
---
--- FOCUS 1.0 columns used (all standard unless noted):
---   resourceid, servicename, subaccountid, chargeperiodstart, billedcost,
---   chargecategory, chargeclass, providername, invoiceissuername
--- Provider-specific columns:
---   x_servicecode (AWS extension) — falls back to servicename if absent
---   x_usagetype   (AWS extension) — used here only to exclude data transfer rows from the
---                                   compute cost comparison. Remove this filter if your FOCUS
---                                   export does not include x_usagetype.
-
+-- Scheduling Miss — weekend cost >= 85% of weekday cost
+-- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/scheduling-miss/README.md
+-- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown')      AS service,

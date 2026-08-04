@@ -1,4 +1,4 @@
-# Compromised API Key — Compromised API Credential
+# Compromised API Key
 
 **Pattern:** AI service spend appearing in a 48-hour window with no prior billing history
 for that service, and more than 80% of the billing rows carrying no workload attribution
