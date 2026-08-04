@@ -4,13 +4,13 @@
 Four published detectors had no matching leak in samples/, so they correctly
 returned zero rows while the answer key implied otherwise:
 
-  QB01  waste              -- billed at full rate, near-zero consumption
-  QB04  utilization ratio  -- provisioned far above what is consumed
-  QB10  commitment loss    -- RI/SP utilization DETERIORATING week over week
-  QB12  idle dev resource  -- flat billing, business-hours-only activity
+  Orphaned Resources  waste              -- billed at full rate, near-zero consumption
+  Over-Provisioned Capacity  utilization ratio  -- provisioned far above what is consumed
+  Commitment Loss  commitment loss    -- RI/SP utilization DETERIORATING week over week
+  Idle Developer Resources  idle dev resource  -- flat billing, business-hours-only activity
 
 This is additive by design: existing rows are never modified, so every detector
-that already worked keeps its exact published figures (notably QB22's worked
+that already worked keeps its exact published figures (notably Config-Change Cost Runaway's worked
 example in samples/guide.html).
 
 Deterministic -- no randomness. Re-running produces byte-identical output, and
@@ -41,8 +41,8 @@ def sql_for(cloud: str) -> str:
         billingperiodstart, billingperiodend, chargeperiodstart, chargeperiodend
     """
     if cloud == "aws":
-        # -- QB01: idle Elastic IP -- billed hourly, consumes nothing at all.
-        # -- QB04: over-provisioned instance -- 24 provisioned hours, ~4 consumed.
+        # -- Orphaned Resources: idle Elastic IP -- billed hourly, consumes nothing at all.
+        # -- Over-Provisioned Capacity: over-provisioned instance -- 24 provisioned hours, ~4 consumed.
         return f"""
         INSERT INTO t BY NAME
         SELECT
@@ -132,7 +132,7 @@ def sql_for(cloud: str) -> str:
         """
 
     if cloud == "azure":
-        # -- QB10: a reserved instance whose utilisation collapses in the last 8 days.
+        # -- Commitment Loss: a reserved instance whose utilisation collapses in the last 8 days.
         # Baseline (days -37..-8): 40 Used / 4 Unused  -> ~9% wasted
         # Recent   (days  -7..0 ): 8 Used  / 36 Unused -> ~82% wasted  (delta ~73pp)
         rows = []
@@ -183,7 +183,7 @@ def sql_for(cloud: str) -> str:
             """)
         return "\n".join(rows)
 
-    # gcp -- QB12: a dev VM billed flat 24/7 whose CPU is only used on weekdays.
+    # gcp -- Idle Developer Resources: a dev VM billed flat 24/7 whose CPU is only used on weekdays.
     # Cost is identical every day (billing_ratio 1.0). Consumption is stored at the
     # WEEKDAY level here and dropped to ~5% at weekends by playground.sql, keyed off
     # the tag "weekly-profile": "business-hours".
@@ -191,12 +191,12 @@ def sql_for(cloud: str) -> str:
     # Why the weekend dip is applied at load time and not baked in: the playground
     # shifts every date forward so the corpus always ends today, and that offset
     # changes daily. A weekday pattern frozen into the parquet would rotate through
-    # the week -- Saturday becomes Wednesday tomorrow -- and QB12/QB07 would fire or
+    # the week -- Saturday becomes Wednesday tomorrow -- and Idle Developer Resources/Scheduling Miss would fire or
     # not depending on which day you ran them. Deriving it from the SHIFTED date is
     # what makes the weekly shape stable while the data stays current.
     #
     # Placed in a long-established subaccount/region on purpose: a brand-new one
-    # would trip QB09 (compute in a region with no prior history) as a side effect.
+    # would trip Unauthorized Compute (compute in a region with no prior history) as a side effect.
     return f"""
         INSERT INTO t BY NAME
         SELECT

@@ -12,7 +12,7 @@
 -- HERE, against the shifted date, rather than baked into the parquet. The shift above
 -- changes by one day every day, so a weekday pattern frozen into the file would rotate
 -- through the week (Saturday becomes Wednesday tomorrow) and the weekday-sensitive
--- detectors -- QB07, QB12 -- would fire or not depending on what day you ran them.
+-- detectors -- Scheduling Miss, Idle Developer Resources -- would fire or not depending on what day you ran them.
 -- Deriving it from the shifted date keeps the weekly shape stable while the data
 -- stays current. Cost is untouched: it is flat every day, which is the whole point.
 CREATE OR REPLACE VIEW bill AS
@@ -45,8 +45,8 @@ CROSS JOIN (
 .print     SELECT servicename, ROUND(SUM(billedcost),2) AS cost
 .print     FROM bill GROUP BY 1 ORDER BY 2 DESC LIMIT 10;
 .print
-.print   Run the QB22 detector yourself:
-.print     .read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql
+.print   Run the Config-Change Cost Runaway detector yourself:
+.print     .read queries/config-change-cost-runaway/query.duckdb.sql
 .print
 .print   Answer key: open samples/guide.html   Walkthrough: README.md   Quit: .quit
 .print ==================================================================

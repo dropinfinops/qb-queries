@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify the playground corpus behaves exactly as the answer key says.
 
-Runs all three acts for every QB against samples/ and reports what each one does.
+Runs all three acts for every pattern against samples/ and reports what each one does.
 This is the inspection sheet: if you change a query, a threshold, or the corpus,
 run this and the difference is visible immediately.
 

@@ -1,7 +1,7 @@
-# DropInFinOps QB Pattern Library
+# FinOps Queries
 
-A collection of standalone FOCUS 1.0 SQL queries for detecting cloud cost anomalies directly
-from your billing data — no proprietary tooling required.
+Runnable FOCUS 1.0 SQL that finds cloud cost leaks — standalone queries you run directly
+against your own billing data, no proprietary tooling required.
 
 These are the detection patterns behind [DropInFinOps](https://dropinfinops.com), published
 here so any practitioner can run them against their own billing data today.
@@ -15,8 +15,8 @@ a one-command playground. You run the detectors yourself against it. The only de
 [DuckDB](https://duckdb.org).
 
 ```bash
-git clone https://github.com/dropinfinops/qb-queries
-cd qb-queries
+git clone https://github.com/dropinfinops/finops-queries
+cd finops-queries
 ./run.sh
 ```
 
@@ -25,7 +25,7 @@ as a view named `bill`, and leaves you at the SQL prompt. It runs nothing for yo
 detector:
 
 ```sql
-.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql
+.read queries/config-change-cost-runaway/query.duckdb.sql
 ```
 
 Expected result — one row, the planted anomaly:
@@ -58,9 +58,9 @@ three files that build on each other, and you can run all three in about a minut
 | **TRUST** | `query.duckdb.sql` | What actually fires? |
 
 ```sql
-.read queries/qb22-config-change-data-processing-runaway/preflight.duckdb.sql
-.read queries/qb22-config-change-data-processing-runaway/diagnostic.duckdb.sql
-.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql
+.read queries/config-change-cost-runaway/preflight.duckdb.sql
+.read queries/config-change-cost-runaway/diagnostic.duckdb.sql
+.read queries/config-change-cost-runaway/query.duckdb.sql
 ```
 
 **Why preflight matters more than it looks.** It makes a zero-row result mean something:
@@ -84,9 +84,9 @@ Not every pattern is an alarm, and it's worth knowing which is which before you 
 
 - **14 are anomaly detectors** — they find a specific thing that is wrong. Expect a small number
   of rows that stand clearly apart from the field.
-- **QB07 and QB08 are posture measures** — they describe a property of your whole estate.
-  QB08 measures tagging coverage; QB07 lists everything billed flat across weekends. On this
-  sample QB07 matches 110 resources and QB08 matches 176, and that is the correct answer: most
+- **Scheduling Miss and Untagged Spend are posture measures** — they describe a property of your whole estate.
+  Untagged Spend measures tagging coverage; Scheduling Miss lists everything billed flat across weekends. On this
+  sample Scheduling Miss matches 110 resources and Untagged Spend matches 176, and that is the correct answer: most
   cloud infrastructure genuinely is always-on, and neither query can know which of *your*
   resources were supposed to be shut down. Read them as a list to triage, not a finding to act on.
 
@@ -157,7 +157,7 @@ Some queries use columns that are AWS Data Exports extensions to the FOCUS 1.0 c
 | Column | Status | Notes |
 |---|---|---|
 | `x_servicecode` | AWS extension | AWS product service code (e.g. `AmazonEC2`). Queries fall back to `servicename` if absent. |
-| `x_usagetype` | AWS extension | AWS line-item usage type string (e.g. `NatGateway-Bytes`). Required for AWS-specific patterns (QB11, QB15, QB16, QB18, QB22). |
+| `x_usagetype` | AWS extension | AWS line-item usage type string (e.g. `NatGateway-Bytes`). Required for AWS-specific patterns (Data Transfer Misconfiguration, Runaway AI Inference, Idle Model Endpoint, Orphaned Knowledge Base, Config-Change Cost Runaway). |
 | `resourcetype` | FOCUS 1.1+ | Not in FOCUS 1.0 core. Safe to include; will be null on FOCUS 1.0 exports. |
 
 ---
@@ -166,22 +166,22 @@ Some queries use columns that are AWS Data Exports extensions to the FOCUS 1.0 c
 
 | Query | What it detects |
 |---|---|
-| [QB01 — Waste](queries/qb01-waste/) | Resources billing at full rate with near-zero consumption |
-| [QB02 — Usage Spike](queries/qb02-usage-spike/) | 3-day cost avg > 2× 30-day baseline |
-| [QB03 — Runaway Cost Acceleration](queries/qb03-runaway-cost-acceleration/) | Sustained cost elevation: 4+ of last 7 days > 1.5× baseline |
-| [QB04 — Utilization Ratio](queries/qb04-utilization-ratio/) | ⚠️ Committed capacity used < 30% of provisioned — see limitations |
-| [QB07 — Scheduling Miss](queries/qb07-scheduling-miss/) | Weekend cost ≥ 85% of weekday cost on resources that should idle |
-| [QB08 — Governance Gap](queries/qb08-governance-gap/) | Significant spend with no cost allocation tags |
-| [QB09 — Unauthorized Compute](queries/qb09-unauthorized-compute/) | Spend appearing in a region with no prior billing history |
-| [QB10 — Commitment Loss](queries/qb10-commitment-loss/) | RI/SP utilization waste ratio deteriorating vs baseline |
-| [QB11 — Data Transfer Misconfiguration](queries/qb11-data-transfer-misconfig/) | NAT Gateway byte cost and cross-AZ transfer disproportionate to compute |
-| [QB12 — Idle Developer Resource](queries/qb12-idle-dev-resource/) | Weekday activity >> weekend activity but billing is flat 24/7 |
-| [QB15 — Runaway Inference](queries/qb15-runaway-inference/) | AI inference cost spike > 2σ above 23-day baseline (AWS Bedrock) |
-| [QB16 — Idle Model Endpoint](queries/qb16-idle-model-endpoint/) | SageMaker real-time endpoint billing with < 100 invocations/7d |
-| [QB17 — Context Window Creep](queries/qb17-context-window-creep/) | AI inference token cost growing > 15% month-over-month (AWS Bedrock) |
-| [QB18 — Orphaned KB OCU](queries/qb18-orphaned-kb-ocu/) | OpenSearch OCU charges with no matching Bedrock inference activity |
-| [QB21 — Compromised API Credential](queries/qb21-compromised-api-credential/) | AI service spend appearing with zero prior history + high untagged rate |
-| [QB22 — Config-Change Data-Processing Runaway](queries/qb22-config-change-data-processing-runaway/) | Per-GB data-processing spend steps up and persists while compute stays flat |
+| [Orphaned Resources — Waste](queries/orphaned-resources/) | Resources billing at full rate with near-zero consumption |
+| [Cost Spike — Usage Spike](queries/cost-spike/) | 3-day cost avg > 2× 30-day baseline |
+| [Persistent Cost Overrun — Runaway Cost Acceleration](queries/persistent-cost-overrun/) | Sustained cost elevation: 4+ of last 7 days > 1.5× baseline |
+| [Over-Provisioned Capacity — Utilization Ratio](queries/over-provisioned-capacity/) | ⚠️ Committed capacity used < 30% of provisioned — see limitations |
+| [Scheduling Miss — Scheduling Miss](queries/scheduling-miss/) | Weekend cost ≥ 85% of weekday cost on resources that should idle |
+| [Untagged Spend — Governance Gap](queries/untagged-spend/) | Significant spend with no cost allocation tags |
+| [Unauthorized Compute — Unauthorized Compute](queries/unauthorized-compute/) | Spend appearing in a region with no prior billing history |
+| [Commitment Loss — Commitment Loss](queries/commitment-loss/) | RI/SP utilization waste ratio deteriorating vs baseline |
+| [Data Transfer Misconfiguration — Data Transfer Misconfiguration](queries/data-transfer-misconfiguration/) | NAT Gateway byte cost and cross-AZ transfer disproportionate to compute |
+| [Idle Developer Resources — Idle Developer Resource](queries/idle-developer-resources/) | Weekday activity >> weekend activity but billing is flat 24/7 |
+| [Runaway AI Inference — Runaway Inference](queries/runaway-ai-inference/) | AI inference cost spike > 2σ above 23-day baseline (AWS Bedrock) |
+| [Idle Model Endpoint — Idle Model Endpoint](queries/idle-model-endpoint/) | SageMaker real-time endpoint billing with < 100 invocations/7d |
+| [Context Window Creep — Context Window Creep](queries/context-window-creep/) | AI inference token cost growing > 15% month-over-month (AWS Bedrock) |
+| [Orphaned Knowledge Base — Orphaned KB OCU](queries/orphaned-knowledge-base/) | OpenSearch OCU charges with no matching Bedrock inference activity |
+| [Compromised API Key — Compromised API Credential](queries/compromised-api-key/) | AI service spend appearing with zero prior history + high untagged rate |
+| [Config-Change Cost Runaway — Config-Change Data-Processing Runaway](queries/config-change-cost-runaway/) | Per-GB data-processing spend steps up and persists while compute stays flat |
 
 Each folder has a `README.md` (what it detects + how to read the output), a `query.sql`
 (Athena/Trino), and — where wired into the playground — a `query.duckdb.sql`.

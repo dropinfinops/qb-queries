@@ -76,13 +76,13 @@
 ./run.sh
 
 <span class="c"># CHECK — can this data even answer the question?</span>
-.read queries/qb22-config-change-data-processing-runaway/preflight.duckdb.sql
+.read queries/config-change-cost-runaway/preflight.duckdb.sql
 
 <span class="c"># LEARN — top subaccounts ranked, the 3 rules as pass/fail flags:</span>
-.read queries/qb22-config-change-data-processing-runaway/diagnostic.duckdb.sql
+.read queries/config-change-cost-runaway/diagnostic.duckdb.sql
 
 <span class="c"># TRUST — the detector, keeping only the confirmed hit:</span>
-.read queries/qb22-config-change-data-processing-runaway/query.duckdb.sql</pre>
+.read queries/config-change-cost-runaway/query.duckdb.sql</pre>
       <p>In the diagnostic, the real runaway trips all three flags while normal
       accounts sit near a 1.0&times; step — that separation is the proof. Compare the detector's row to the
       expected finding below, then explore: change a threshold, group by
@@ -99,10 +99,10 @@
       detectors and prints what each one finds — the same inspection this repo is tested with.</p>
     </div>
 
-    <h2>The worked example — QB22</h2>
+    <h2>The worked example — Config-Change Cost Runaway</h2>
     <div class="card feature">
       <div class="card-head">
-        <span class="id">QB22</span>
+        <span class="id">Config-Change Cost Runaway</span>
         <h3>Config-Change Data-Processing Runaway</h3>
         <span class="badge cloud">AWS</span>
         <span class="badge sev">High</span>
@@ -132,20 +132,20 @@
       because the data is re-dated to today on every load.</p>
       <table class="patterns">
         <tr><th>Leak shape</th><th>Cloud</th><th>Query</th><th>Expected rows</th></tr>
-        <tr><td>Resource billed at full rate, consuming nothing</td><td>AWS</td><td class="q">QB01</td><td class="num">1</td></tr>
-        <tr><td>Usage spike vs 30-day baseline</td><td>AWS · Azure · GCP</td><td class="q">QB02</td><td class="num">6</td></tr>
-        <tr><td>Sustained cost acceleration</td><td>AWS · Azure · GCP</td><td class="q">QB03</td><td class="num">11</td></tr>
-        <tr><td>Provisioned far above what is consumed</td><td>AWS</td><td class="q">QB04</td><td class="num">2</td></tr>
-        <tr><td>Compute in a region with no prior history</td><td>Azure · GCP</td><td class="q">QB09</td><td class="num">6</td></tr>
-        <tr><td>Commitment (RI/SP) utilization deteriorating</td><td>Azure</td><td class="q">QB10</td><td class="num">1</td></tr>
-        <tr><td>Data-transfer misconfiguration</td><td>AWS</td><td class="q">QB11</td><td class="num">3</td></tr>
-        <tr><td>Idle developer resource billing 24/7</td><td>GCP</td><td class="q">QB12</td><td class="num">1</td></tr>
-        <tr><td>Runaway AI inference spend</td><td>AWS</td><td class="q">QB15</td><td class="num">1</td></tr>
-        <tr><td>Idle model endpoint still billing</td><td>AWS</td><td class="q">QB16</td><td class="num">2</td></tr>
-        <tr><td>Context-window creep month over month</td><td>AWS</td><td class="q">QB17</td><td class="num">1</td></tr>
-        <tr><td>Orphaned search/index capacity, no matching activity</td><td>AWS</td><td class="q">QB18</td><td class="num">1</td></tr>
-        <tr><td>Compromised API credential — AI spend, no ownership</td><td>Azure</td><td class="q">QB21</td><td class="num">2</td></tr>
-        <tr><td>Config-change data-processing runaway</td><td>AWS</td><td class="q">QB22 ↑</td><td class="num">1</td></tr>
+        <tr><td>Resource billed at full rate, consuming nothing</td><td>AWS</td><td class="q">Orphaned Resources</td><td class="num">1</td></tr>
+        <tr><td>Usage spike vs 30-day baseline</td><td>AWS · Azure · GCP</td><td class="q">Cost Spike</td><td class="num">6</td></tr>
+        <tr><td>Sustained cost acceleration</td><td>AWS · Azure · GCP</td><td class="q">Persistent Cost Overrun</td><td class="num">11</td></tr>
+        <tr><td>Provisioned far above what is consumed</td><td>AWS</td><td class="q">Over-Provisioned Capacity</td><td class="num">2</td></tr>
+        <tr><td>Compute in a region with no prior history</td><td>Azure · GCP</td><td class="q">Unauthorized Compute</td><td class="num">6</td></tr>
+        <tr><td>Commitment (RI/SP) utilization deteriorating</td><td>Azure</td><td class="q">Commitment Loss</td><td class="num">1</td></tr>
+        <tr><td>Data-transfer misconfiguration</td><td>AWS</td><td class="q">Data Transfer Misconfiguration</td><td class="num">3</td></tr>
+        <tr><td>Idle developer resource billing 24/7</td><td>GCP</td><td class="q">Idle Developer Resources</td><td class="num">1</td></tr>
+        <tr><td>Runaway AI inference spend</td><td>AWS</td><td class="q">Runaway AI Inference</td><td class="num">1</td></tr>
+        <tr><td>Idle model endpoint still billing</td><td>AWS</td><td class="q">Idle Model Endpoint</td><td class="num">2</td></tr>
+        <tr><td>Context-window creep month over month</td><td>AWS</td><td class="q">Context Window Creep</td><td class="num">1</td></tr>
+        <tr><td>Orphaned search/index capacity, no matching activity</td><td>AWS</td><td class="q">Orphaned Knowledge Base</td><td class="num">1</td></tr>
+        <tr><td>Compromised API credential — AI spend, no ownership</td><td>Azure</td><td class="q">Compromised API Key</td><td class="num">2</td></tr>
+        <tr><td>Config-change data-processing runaway</td><td>AWS</td><td class="q">Config-Change Cost Runaway ↑</td><td class="num">1</td></tr>
         <tr><td>Premium model tier on a routine workload</td><td>AWS</td><td class="soon">coming</td><td class="num">—</td></tr>
       </table>
     </div>
@@ -153,12 +153,12 @@
     <h2>Two of the sixteen are not alarms</h2>
     <div class="card">
       <p style="margin-top:0">Worth knowing before you run them, because they behave differently on purpose.
-      <b>QB07</b> and <b>QB08</b> are <b>posture measures</b>, not anomaly detectors: they describe a property
+      <b>Scheduling Miss</b> and <b>Untagged Spend</b> are <b>posture measures</b>, not anomaly detectors: they describe a property
       of the whole estate rather than finding one thing that is wrong.</p>
       <table class="patterns">
         <tr><th>Measure</th><th>Cloud</th><th>Query</th><th>Expected rows</th></tr>
-        <tr><td>Weekend cost barely drops (scheduling candidates)</td><td>AWS · Azure · GCP</td><td class="q">QB07</td><td class="num">110</td></tr>
-        <tr><td>Untagged spend (tagging coverage)</td><td>AWS · Azure · GCP</td><td class="q">QB08</td><td class="num">176</td></tr>
+        <tr><td>Weekend cost barely drops (scheduling candidates)</td><td>AWS · Azure · GCP</td><td class="q">Scheduling Miss</td><td class="num">110</td></tr>
+        <tr><td>Untagged spend (tagging coverage)</td><td>AWS · Azure · GCP</td><td class="q">Untagged Spend</td><td class="num">176</td></tr>
       </table>
       <p class="note">Those large counts are the <b>correct</b> answer, not a false positive. In this bill 147 of
       185 resources genuinely bill flat across weekends — as most production infrastructure does — and neither
