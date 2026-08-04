@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Commitment Loss — RI/SP utilization waste ratio deteriorating vs baseline
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/commitment-loss/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH daily_commitment AS (
     SELECT
         commitmentdiscountid,

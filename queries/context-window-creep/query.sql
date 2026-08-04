@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Context Window Creep — Bedrock inference token cost growing > 15% month-over-month
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/context-window-creep/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH inference_monthly AS (
     SELECT
         subaccountid,

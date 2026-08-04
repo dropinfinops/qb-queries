@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Compromised API Key — AI service spend with no prior history + high untagged rate
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/compromised-api-key/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH ai_baseline AS (
     SELECT
         subaccountid,

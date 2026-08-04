@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Untagged Spend: Governance Gap — significant spend with no cost allocation tags
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/untagged-spend/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            COALESCE(x_servicecode, servicename, 'Unknown')      AS service,

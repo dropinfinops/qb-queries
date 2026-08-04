@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Persistent Cost Overrun: Runaway Cost Acceleration — sustained elevation: 4+ of last 7 days > 1.5× baseline
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/persistent-cost-overrun/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,

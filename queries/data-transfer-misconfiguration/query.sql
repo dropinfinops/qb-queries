@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Data Transfer Misconfiguration — NAT Gateway byte-processing waste and cross-AZ ratio
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/data-transfer-misconfiguration/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH networking_daily AS (
     SELECT
         subaccountid,

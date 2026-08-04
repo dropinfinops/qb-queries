@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Cost Spike: Usage Spike — recent 3-day cost avg > 2× 30-day baseline
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/cost-spike/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH resource_daily AS (
     SELECT resourceid,
            resourcetype,

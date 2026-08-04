@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Orphaned Knowledge Base: Orphaned Bedrock Knowledge Base OCU — OpenSearch OCU cost with no matching Bedrock inference
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/orphaned-knowledge-base/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH ocu_daily AS (
     SELECT
         subaccountid,

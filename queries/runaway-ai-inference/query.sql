@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Runaway AI Inference: Runaway Inference — AI inference billing spike > 2σ above 23-day baseline
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/runaway-ai-inference/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH inference_daily AS (
     SELECT
         subaccountid,

@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Idle Model Endpoint — SageMaker endpoint billing with < 100 invocations in 7 days
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/idle-model-endpoint/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH endpoint_cost AS (
     SELECT
         subaccountid,

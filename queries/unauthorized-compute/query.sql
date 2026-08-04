@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: Apache-2.0
 -- Unauthorized Compute — spend in a region with no prior billing history
 -- From FinOps Queries (https://github.com/dropinfinops/finops-queries) -- full explanation: queries/unauthorized-compute/README.md
--- Athena / Trino / Presto. Replace `bill` with your FOCUS billing table.
+-- Athena / Trino / Presto. Replace `your_focus_table` (below) with your FOCUS billing table.
 WITH region_first_seen AS (
     SELECT subaccountid,
            regionid,
